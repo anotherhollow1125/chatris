@@ -347,7 +347,7 @@ impl ControlledMino {
     fn new(mino: &'static Mino) -> ControlledMino {
         ControlledMino {
             pos: (0, 4),
-            mino: mino,
+            mino,
             dir: Dir::North,
         }
     }
@@ -384,7 +384,7 @@ impl ControlledMino {
 
                 let (sx, sy) = self.pos;
                 // 範囲チェック
-                let (x, y) = ((i as i32 + sx) as i32, (j as i32 + sy) as i32);
+                let (x, y) = (i as i32 + sx, j as i32 + sy);
                 if x < 0 || height <= x || y < 0 || width <= y {
                     return false;
                 }
@@ -560,7 +560,7 @@ impl Game {
     }
 
     pub fn rend_field(&self) -> FieldArray {
-        let mut res = self.field.clone();
+        let mut res = self.field;
 
         let (x, y) = self.contmino.pos;
         let r = self.contmino.rend_mino();
@@ -614,12 +614,11 @@ impl Game {
         }
 
         let mino = self.contmino.mino;
-        let size = mino.size;
         let (x, y) = self.contmino.pos;
         let r = self.contmino.rend_mino();
-        for i in 0..size {
-            for j in 0..size {
-                if r[i][j] {
+        for (i, r_row) in r.iter().enumerate() {
+            for (j, &r_col) in r_row.iter().enumerate() {
+                if r_col {
                     let (x, y) = ((i as i32 + x) as usize, (j as i32 + y) as usize);
                     self.field[x][y] = Block::new(true, mino.color);
                 }
@@ -645,22 +644,22 @@ impl Game {
         }
 
         match input_key {
-            &RSpin => self.contmino.spin_right(&self.field),
-            &LSpin => self.contmino.spin_left(&self.field),
-            &Down => {
+            RSpin => self.contmino.spin_right(&self.field),
+            LSpin => self.contmino.spin_left(&self.field),
+            Down => {
                 self.mino_down_with_score();
             }
-            &HardDrop => while self.mino_down_with_score() {},
-            &Right => {
+            HardDrop => while self.mino_down_with_score() {},
+            Right => {
                 self.contmino.move_mino(&self.field, 0, 1);
             }
-            &Left => {
+            Left => {
                 self.contmino.move_mino(&self.field, 0, -1);
             }
-            &Hold => {
+            Hold => {
                 self.hold();
             }
-            &Commit => {
+            Commit => {
                 while self.mino_down_with_score() {}
                 self.fix_mino();
             }

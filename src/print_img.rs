@@ -19,7 +19,7 @@ pub enum ColorMode {
 impl ColorMode {
     fn encode_color(&self, color: MinoColors, contmino_color: MinoColors) -> Rgba<u8> {
         let color = match self {
-            &ColorMode::Colorful => {
+            ColorMode::Colorful => {
                 let color = match color {
                     MinoColors::TRANS => MinoColors::WHITE,
                     MinoColors::GRAY => contmino_color,
@@ -27,7 +27,7 @@ impl ColorMode {
                 };
                 color.to_rgb()
             }
-            &ColorMode::Monochrome => {
+            ColorMode::Monochrome => {
                 let color = match color {
                     MinoColors::TRANS => MinoColors::WHITE,
                     MinoColors::GRAY => contmino_color,
